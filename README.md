@@ -1,49 +1,80 @@
 # Zara Interpreter
 
-A custom programming language interpreter written in Java. ZARA is designed to be simple, clean, and intuitive, featuring basic operations like variable assignments, math evaluations, conditional statements, and loops.
+A custom programming language interpreter written in Java. **ZARA** is designed to be simple, clean, and intuitive, supporting core programming constructs such as variables, arithmetic operations, conditionals, and loops.
 
-## Features
-- **Lexical Analysis (Lexer)**: Tokenizes source code, handling numbers, strings, identifiers, symbols, and indentation blocks.
-- **Syntax Analysis (Parser)**: Constructs an Abstract Syntax Tree (AST) representing operations based on token precedence.
-- **Execution Engine (Interpreter)**: Evaluates the AST nodes and manages runtime state (variables and environments).
-- **Maven Integration**: Pre-configured with Maven for easy dependency management and execution.
+---
 
-## Project Structure
+## 🚀 Features
+
+* **Lexer (Lexical Analysis)**
+  Converts source code into tokens such as numbers, strings, identifiers, and symbols, with support for indentation-based blocks.
+
+* **Parser (Syntax Analysis)**
+  Builds an Abstract Syntax Tree (AST) using operator precedence and structured grammar rules.
+
+* **Interpreter (Execution Engine)**
+  Executes AST nodes and manages runtime state, including variables and environments.
+
+* **Modular Architecture**
+  Clean separation of concerns (lexer, parser, interpreter, runtime, utils).
+
+* **Maven Support**
+  Easy build and execution using Maven.
+
+---
+
+## 📁 Project Structure
+
 ```text
 zara-interpreter/
-├── src/main/java/com/zara/     # Java Source Code
-│   ├── lexer/                  # Tokenizer and Token definitions
-│   ├── parser/                 # AST Node definitions and Parser
-│   ├── interpreter/            # Evaluation Logic and Environment
-│   ├── runtime/                # Value representations
-│   ├── utils/                  # Error Handling utilities
-│   └── main/                   # Entry point (Main.java)
-├── programs/                   # Sample .zara programs
-├── docs/                       # ZARA architecture, grammar, and examples
-├── pom.xml                     # Maven project configuration
-└── README.md                   # This file
+├── src/main/java/com/zara/
+│   ├── lexer/          # Tokenization logic
+│   ├── parser/         # AST + parsing logic
+│   ├── interpreter/    # Execution engine
+│   ├── runtime/        # Value representations
+│   ├── utils/          # Error handling utilities
+│   └── main/           # Entry point (Main.java)
+├── programs/           # Sample .zara programs
+├── docs/               # Documentation (grammar, architecture)
+├── pom.xml             # Maven configuration
+└── README.md           # Project documentation
 ```
 
-## How to Build and Run
+---
 
-### Prerequisites
-- **Java 17+**
-- **Maven 3.6+**
+## ⚙️ Prerequisites
 
-### 1. Build the Interpreter
-Navigate to the project root directory and compile the source code:
+Make sure you have:
+
+* Java 17 or higher
+* Maven 3.6 or higher
+
+---
+
+## 🛠️ Build Instructions
+
 ```bash
-mvn clean compile
+mvn clean install
 ```
 
-### 2. Run a ZARA Program
-You can run any `.zara` file using Maven's `exec:java` plugin:
+---
+
+## ▶️ Run a Program
+
+Execute a `.zara` file using:
+
 ```bash
-mvn exec:java -Dexec.mainClass="com.zara.main.Main" -Dexec.args="programs/program1.zara"
+mvn exec:java \
+  -Dexec.mainClass="com.zara.main.Main" \
+  -Dexec.args="programs/program1.zara"
 ```
 
-## Example Program
-Here is an example ZARA program:
+---
+
+## 🧪 Example
+
+### ZARA Code
+
 ```zara
 set x = 10
 set y = 20
@@ -56,12 +87,37 @@ when result > 40:
     show "Result is greater than 40"
 ```
 
-Output:
+### Output
+
 ```text
 The result is:
 50.0
 Result is greater than 40
 ```
 
-## Contributing
-Feel free to fork this project, create a new branch, and submit a Pull Request!
+---
+
+## 💡 Future Improvements
+
+* Add functions and recursion support
+* Improve error reporting with line/column info
+* Add REPL (interactive shell)
+* Extend standard library
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create a new branch (`feature/your-feature-name`)
+3. Commit your changes
+4. Push to your fork
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+This project is open-source. Add a license if not already included.

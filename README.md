@@ -1,141 +1,67 @@
-🚀 ZARA Interpreter
-A Modular Compiler Design Project in Java
-🧠 Overview
+# Zara Interpreter
 
-ZARA Interpreter is a custom-designed scripting language engine built using Java, implementing core principles of compiler design with a clean, modular, and scalable architecture.
+A custom programming language interpreter written in Java. ZARA is designed to be simple, clean, and intuitive, featuring basic operations like variable assignments, math evaluations, conditional statements, and loops.
 
-It processes .zara programs through:
+## Features
+- **Lexical Analysis (Lexer)**: Tokenizes source code, handling numbers, strings, identifiers, symbols, and indentation blocks.
+- **Syntax Analysis (Parser)**: Constructs an Abstract Syntax Tree (AST) representing operations based on token precedence.
+- **Execution Engine (Interpreter)**: Evaluates the AST nodes and manages runtime state (variables and environments).
+- **Maven Integration**: Pre-configured with Maven for easy dependency management and execution.
 
-Lexical Analysis → Syntax Parsing → Abstract Syntax Tree → Execution
-
-The project is structured following system design principles, ensuring high readability, maintainability, and extensibility.
-
-✨ Features
-🔍 Lexical Analysis (Tokenizer) – Converts source code into tokens
-🌳 Recursive Descent Parser – Builds structured AST
-⚙️ Interpreter Engine – Executes instructions dynamically
-🧩 Custom ZARA Language
-Variables
-Arithmetic expressions
-Strings
-Conditionals (when)
-Loops (loop)
-🏗️ Clean Architecture
-Separation of concerns (Lexer, Parser, Interpreter)
-❌ Error Handling Support
-📦 Extensible Design (easy to add new features)
-🏗️ Project Structure
+## Project Structure
+```text
 zara-interpreter/
-│
-├── src/
-│   └── com/zara/
-│
-│       ├── lexer/                 # Tokenization
-│       │   ├── Tokenizer.java
-│       │   ├── Token.java
-│       │   └── TokenType.java
-│
-│       ├── parser/                # Parsing logic
-│       │   ├── Parser.java
-│       │   └── ast/
-│       │       ├── Expression.java
-│       │       ├── NumberNode.java
-│       │       ├── StringNode.java
-│       │       ├── VariableNode.java
-│       │       └── BinaryOpNode.java
-│
-│       ├── interpreter/           # Execution engine
-│       │   ├── Interpreter.java
-│       │   ├── Environment.java
-│       │   └── instruction/
-│       │       ├── Instruction.java
-│       │       ├── AssignInstruction.java
-│       │       ├── PrintInstruction.java
-│       │       ├── IfInstruction.java
-│       │       └── RepeatInstruction.java
-│
-│       ├── runtime/               # Runtime abstractions
-│       │   └── Value.java
-│
-│       ├── utils/                 # Utility classes
-│       │   └── ErrorHandler.java
-│
-│       └── main/                  # Entry point
-│           └── Main.java
-│
-├── programs/                      # Sample ZARA programs
-├── docs/                          # Documentation (optional)
-├── tests/                         # Unit tests (future)
-└── README.md
-⚙️ Installation & Setup
-🔧 Clone Repository
-git clone https://github.com/your-username/zara-interpreter.git
-cd zara-interpreter
-▶️ Compile
-cd src
-javac com/zara/**/*.java
-▶️ Run
-java com.zara.main.Main ../programs/program1.zara
-🧪 Sample Program
-📌 Input (program1.zara)
+├── src/main/java/com/zara/     # Java Source Code
+│   ├── lexer/                  # Tokenizer and Token definitions
+│   ├── parser/                 # AST Node definitions and Parser
+│   ├── interpreter/            # Evaluation Logic and Environment
+│   ├── runtime/                # Value representations
+│   ├── utils/                  # Error Handling utilities
+│   └── main/                   # Entry point (Main.java)
+├── programs/                   # Sample .zara programs
+├── docs/                       # ZARA architecture, grammar, and examples
+├── pom.xml                     # Maven project configuration
+└── README.md                   # This file
+```
+
+## How to Build and Run
+
+### Prerequisites
+- **Java 17+**
+- **Maven 3.6+**
+
+### 1. Build the Interpreter
+Navigate to the project root directory and compile the source code:
+```bash
+mvn clean compile
+```
+
+### 2. Run a ZARA Program
+You can run any `.zara` file using Maven's `exec:java` plugin:
+```bash
+mvn exec:java -Dexec.mainClass="com.zara.main.Main" -Dexec.args="programs/program1.zara"
+```
+
+## Example Program
+Here is an example ZARA program:
+```zara
 set x = 10
-set y = 5
-show x + y
-📌 Output
-15
-📚 ZARA Language Syntax
-Feature	Example
-Assignment	set x = 10
-Print	show x
-String	show "Hello"
-Condition	when x > 5:
-Loop	loop 3:
-Operators	+ - * /
-Comparison	> < ==
-⚡ How It Works
-1️⃣ Lexer
-Reads source code
-Converts into tokens
-Handles indentation-based structure
-2️⃣ Parser
-Uses recursive descent parsing
-Builds Abstract Syntax Tree (AST)
-Maintains operator precedence
-3️⃣ Interpreter
-Executes AST nodes
-Uses Environment (symbol table)
-Supports control flow and expressions
-🎯 Concepts Demonstrated
-Compiler Design Phases
-Abstract Syntax Trees (AST)
-Interpreter Pattern
-Symbol Table Management
-Recursive Parsing
-Clean Code Architecture
-🚀 Future Enhancements
-🔧 Type Checking (Semantic Analysis)
-⚡ Bytecode / Intermediate Code Generation
-🧠 Function Support & Scope Handling
-📊 Debug Mode (step execution)
-🌐 GUI Visualization
-👨‍💻 Author
+set y = 20
+set result = x + y * 2
 
-Mani Kumar
-Akanksha Kushwaha
-Nirmal Mewada
+show "The result is:"
+show result
 
-B.Tech Student
-Open Source Contributor (EWOC Top 50)
-Passionate about Systems & AI
-⭐ Resume Highlight
+when result > 40:
+    show "Result is greater than 40"
+```
 
-Developed a modular scripting language interpreter in Java implementing lexical analysis, recursive descent parsing, AST construction, and execution engine with clean architecture and scalable design.
+Output:
+```text
+The result is:
+50.0
+Result is greater than 40
+```
 
-🤝 Contributing
-
-Contributions are welcome!
-
-Fork → Branch → Commit → Push → Pull Request
-⭐ Support
-
-If you found this project useful, give it a ⭐ on GitHub!
+## Contributing
+Feel free to fork this project, create a new branch, and submit a Pull Request!

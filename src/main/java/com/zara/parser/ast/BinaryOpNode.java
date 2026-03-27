@@ -19,13 +19,23 @@ public class BinaryOpNode implements Expression {
         this.operator = operator;
         this.right = right;
     }
-
-    @Override
+    @Override   //Overriding
     public Object evaluate(Environment env) {
         Object leftVal  = left.evaluate(env);
         Object rightVal = right.evaluate(env);
 
-        // Arithmetic and comparison both require numeric operands
+        // Handle string concatenation
+        if (operator.equals("+") && (leftVal instanceof String || rightVal instanceof String)) {
+            return String.valueOf(leftVal) + String.valueOf(rightVal);
+        }
+
+        // Validate numeric types
+        if (!(leftVal instanceof Number) || !(rightVal instanceof Number)) {
+            throw new RuntimeException(
+                "Invalid operation: '" + operator + "' requires numeric operands"
+            );
+        }
+
         double l = ((Number) leftVal).doubleValue();
         double r = ((Number) rightVal).doubleValue();
 

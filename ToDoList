@@ -1,0 +1,91 @@
+# 🚀 ZARA Interpreter - Development Roadmap
+
+## 📌 Phase 1: Project Structure (Completed ✅)
+- [x] Restructure project into modular architecture
+- [x] Separate lexer, parser, interpreter
+- [x] Introduce clean folder hierarchy
+
+---
+
+## 🔍 Phase 2: Core Features (In Progress 🚧)
+
+### Lexer
+- [x] Token generation
+- [x] Handle numbers, strings, identifiers
+- [ ] Improve error messages
+- [ ] Add support for comments
+
+### Parser
+- [x] Expression parsing
+- [x] Operator precedence
+- [x] AST generation
+- [ ] Improve syntax error handling
+- [ ] Add support for nested blocks
+
+### Interpreter
+- [x] Variable assignment
+- [x] Arithmetic operations
+- [x] Conditional execution
+- [x] Loop execution
+- [ ] Add better runtime error handling
+
+---
+
+## 🧠 Phase 3: Language Enhancements
+
+- [ ] Boolean support (`true`, `false`)
+- [ ] Logical operators (`&&`, `||`)
+- [ ] Functions support
+- [ ] Scope handling
+- [ ] Arrays / Lists
+
+---
+
+## ⚡ Phase 4: Advanced Features
+
+- [ ] Semantic analysis (type checking)
+- [ ] Intermediate code generation
+- [ ] Bytecode / VM design
+- [ ] Optimization phase
+
+---
+
+## 🧪 Phase 5: Testing & Quality
+
+- [ ] Unit tests for lexer
+- [ ] Unit tests for parser
+- [ ] Integration tests
+- [ ] Edge case handling
+
+---
+
+## 📊 Phase 6: Developer Experience
+
+- [ ] Add debug mode
+- [ ] Add logging system
+- [ ] Improve CLI interface
+
+---
+
+## 📚 Phase 7: Documentation
+
+- [ ] Add grammar documentation
+- [ ] Add architecture diagram
+- [ ] Add AST visualization
+- [ ] Improve README
+
+---
+
+## 🎯 Phase 8: Deployment & Packaging
+
+- [ ] Convert to Maven (`pom.xml`)
+- [ ] Create executable JAR
+- [ ] Add versioning
+
+---
+
+## 🌟 Future Vision
+
+- [ ] Build full compiler (not just interpreter)
+- [ ] Add GUI for visualization
+- [ ] Convert ZARA into production-ready language

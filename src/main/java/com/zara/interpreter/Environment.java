@@ -1,14 +1,5 @@
 package com.zara.interpreter;
 
-import java.util.*;
-import com.zara.lexer.*;
-import com.zara.parser.*;
-import com.zara.parser.ast.*;
-import com.zara.interpreter.*;
-import com.zara.interpreter.instruction.*;
-import com.zara.runtime.*;
-import com.zara.utils.*;
-
 import java.util.HashMap;
 import java.util.Map;
 

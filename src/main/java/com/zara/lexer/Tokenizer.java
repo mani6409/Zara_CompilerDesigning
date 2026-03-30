@@ -55,7 +55,8 @@ public class Tokenizer {
                 }
 
                 if (indentStack.peek() != indent) {
-                    throw new RuntimeException("Invalid indentation at line " + lineNum); // UPDATED
+                    throw new LexerException("Invalid indentation", lineNum);
+
                 }
             }
 
@@ -77,8 +78,22 @@ public class Tokenizer {
                 // Number
                 if (Character.isDigit(c)) {
                     int start = i;
-                    while (i < trimmed.length() && (Character.isDigit(trimmed.charAt(i)) || trimmed.charAt(i) == '.'))
-                        i++;
+                    boolean hasDot = false;
+                    while (i < trimmed.length()) {
+                        char ch = trimmed.charAt(i);
+                        if (Character.isDigit(ch)) {
+                            i++;
+                        } else if (ch == '.') {
+                            if (hasDot) {
+                                // ADDED (invalid number format)
+                                throw new LexerException("Invalid number format", lineNum);
+                            }
+                            hasDot = true;
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
                     tokens.add(new Token(TokenType.NUMBER, trimmed.substring(start, i), lineNum));
                     continue;
                 }
@@ -87,10 +102,11 @@ public class Tokenizer {
                 if (c == '"') {
                     i++;
                     int start = i;
-                    while (i < trimmed.length() && trimmed.charAt(i) != '"')
+                    while (i < trimmed.length() && trimmed.charAt(i) != '"') {
                         i++;
+                    }
                     if (i >= trimmed.length()) { // error handling
-                        throw new RuntimeException("Unterminated string at line " + lineNum);
+                        throw new LexerException("Unterminated string", lineNum);
                     }
                     tokens.add(new Token(TokenType.STRING, trimmed.substring(start, i), lineNum));
                     i++;
@@ -161,8 +177,14 @@ public class Tokenizer {
                     case '<' -> tokens.add(new Token(TokenType.LESS, "<", lineNum));
                     case '=' -> tokens.add(new Token(TokenType.EQUALS, "=", lineNum));
                     case ':' -> tokens.add(new Token(TokenType.COLON, ":", lineNum));
+<<<<<<< HEAD
                     default -> throw new RuntimeException(
                             "Unrecognised character '" + c + "' at line " + lineNum);
+=======
+                    default -> {
+                        throw new LexerException("Unexpected character '" + c + "'", lineNum);
+                    }
+>>>>>>> 85a1685 (Added LexerException and improved Tokenizer indentation handling)
                 }
                 i++;
             }

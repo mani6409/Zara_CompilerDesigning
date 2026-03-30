@@ -1,8 +1,11 @@
 package com.zara.interpreter;
 
-import java.util.List;
+import com.zara.lexer.*;
+import com.zara.parser.*;
 import com.zara.interpreter.instruction.*;
 import com.zara.runtime.*;
+
+import java.util.List;
 
 /**
  * Interpreter is responsible ONLY for executing instructions.
@@ -29,11 +32,9 @@ public class Interpreter {
         // Execute each instruction one by one
         for (Instruction instruction : instructions) {
             try {
-                // Each instruction knows how to execute itself
                 instruction.execute(env);
 
             } catch (Exception e) {
-                // Catch runtime errors and wrap them with meaningful context
                 throw new RuntimeException(
                     "Runtime Error at "
                     + instruction.getClass().getSimpleName()
@@ -45,41 +46,18 @@ public class Interpreter {
 
     /**
      * TEMPORARY METHOD (Backward Compatibility)
-     *
-     * This method runs the full pipeline:
-     * 1. Tokenization
-     * 2. Parsing
-     * 3. Execution
-     *
-     * WHY IT EXISTS:
-     * - Existing tests and modules depend on this method
-     * - Prevents breaking the current pipeline during refactoring
-     *
-     * FUTURE:
-     * - This method will be removed once Main.java fully handles the pipeline
-     *
-     * @param sourceCode Raw source code as input
      */
     public void run(String sourceCode) {
 
-        // ------------------ STEP 1: TOKENIZATION ------------------
-        // Convert raw source code into tokens
-        com.zara.lexer.Tokenizer tokenizer =
-                new com.zara.lexer.Tokenizer(sourceCode);
+        // STEP 1: TOKENIZATION
+        Tokenizer tokenizer = new Tokenizer(sourceCode);
+        List<Token> tokens = tokenizer.tokenize();
 
-        java.util.List<com.zara.lexer.Token> tokens =
-                tokenizer.tokenize();
+        // STEP 2: PARSING
+        Parser parser = new Parser(tokens);
+        List<Instruction> instructions = parser.parse();
 
-        // ------------------ STEP 2: PARSING ------------------
-        // Convert tokens into executable instructions
-        com.zara.parser.Parser parser =
-                new com.zara.parser.Parser(tokens);
-
-        java.util.List<com.zara.interpreter.instruction.Instruction> instructions =
-                parser.parse();
-
-        // ------------------ STEP 3: EXECUTION ------------------
-        // Execute the parsed instructions using the new execution engine
+        // STEP 3: EXECUTION
         execute(instructions);
     }
 }

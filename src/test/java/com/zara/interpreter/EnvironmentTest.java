@@ -1,3 +1,5 @@
+package com.zara.interpreter;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -5,11 +7,16 @@ public class EnvironmentTest {
     @Test
     public void testVariableStorageAndRetrieval() {
         Environment env = new Environment();
-        env.storeVariable("x", 10);
-        env.storeVariable("y", 20);
+        env.set("x", 10);
+        env.set("y", 20);
 
-        assertEquals(10, env.retrieveVariable("x"));
-        assertEquals(20, env.retrieveVariable("y"));
-        assertEquals(null, env.retrieveVariable("z")); // Check retrieval of a non-existent variable
+        assertEquals(10, env.get("x"));
+        assertEquals(20, env.get("y"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testRetrieveNonExistentVariable() {
+        Environment env = new Environment();
+        env.get("z");
     }
 }

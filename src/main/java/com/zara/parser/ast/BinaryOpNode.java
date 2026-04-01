@@ -134,7 +134,6 @@ public class BinaryOpNode implements Expression {
     /*
      * Returns a readable string representation of this expression.
      * Useful for debugging and error messages.
-     *
      * Example output:
      *      (x + 5)
      */

@@ -21,8 +21,13 @@ public class IfInstruction implements Instruction {
         Object result = condition.evaluate(env);
         // If the result is true, execute each instruction in the body.
         if (Boolean.TRUE.equals(result)) {
-            for (Instruction instruction : body) {
-                instruction.execute(env);
+            env.enterScope();
+            try {
+                for (Instruction instruction : body) {
+                    instruction.execute(env);
+                }
+            } finally {
+                env.exitScope();
             }
         }
     }

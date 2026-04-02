@@ -16,11 +16,16 @@ public class RepeatInstruction implements Instruction {
 
     @Override
     public void execute(Environment env) {
-        // Execute all body instructions, repeated count times.
-        for (int i = 0; i < count; i++) {
-            for (Instruction instruction : body) {
-                instruction.execute(env);
+        env.enterScope();
+        try {
+            // Execute all body instructions, repeated count times.
+            for (int i = 0; i < count; i++) {
+                for (Instruction instruction : body) {
+                    instruction.execute(env);
+                }
             }
+        } finally {
+            env.exitScope();
         }
     }
 }

@@ -91,6 +91,21 @@ public class Interpreter {
     }
 
     /**
+     * Executes a list of instructions within a new scope block.
+     * Centralizes scope management for all block-based constructs.
+     */
+    public static void executeBlock(List<Instruction> body, Environment env) {
+        env.enterScope();
+        try {
+            for (Instruction instruction : body) {
+                instruction.execute(env);
+            }
+        } finally {
+            env.exitScope();
+        }
+    }
+
+    /**
      * Backwards-compatible entry: tokenize, parse, execute (no C-style {@code for} normalization).
      */
     public void run(String sourceCode) {

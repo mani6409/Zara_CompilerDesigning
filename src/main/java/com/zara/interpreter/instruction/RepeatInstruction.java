@@ -16,16 +16,9 @@ public class RepeatInstruction implements Instruction {
 
     @Override
     public void execute(Environment env) {
-        env.enterScope();
-        try {
-            // Execute all body instructions, repeated count times.
-            for (int i = 0; i < count; i++) {
-                for (Instruction instruction : body) {
-                    instruction.execute(env);
-                }
-            }
-        } finally {
-            env.exitScope();
+        // Execute all body instructions, repeated count times.
+        for (int i = 0; i < count; i++) {
+            Interpreter.executeBlock(body, env);
         }
     }
 }

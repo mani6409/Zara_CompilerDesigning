@@ -1,13 +1,8 @@
 package com.zara.interpreter.instruction;
 
-import java.util.*;
-import com.zara.lexer.*;
-import com.zara.parser.*;
 import com.zara.parser.ast.*;
 import com.zara.interpreter.*;
-import com.zara.interpreter.instruction.*;
-import com.zara.runtime.*;
-import com.zara.utils.*;
+
 
 import java.util.List;
 
@@ -26,8 +21,13 @@ public class IfInstruction implements Instruction {
         Object result = condition.evaluate(env);
         // If the result is true, execute each instruction in the body.
         if (Boolean.TRUE.equals(result)) {
-            for (Instruction instruction : body) {
-                instruction.execute(env);
+            env.enterScope();
+            try {
+                for (Instruction instruction : body) {
+                    instruction.execute(env);
+                }
+            } finally {
+                env.exitScope();
             }
         }
     }

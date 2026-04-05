@@ -5,7 +5,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.zara.runtime.Value;
 
 public class Environment {
     // Scope stack: top (head) scope is where new bindings are created.
@@ -78,10 +77,15 @@ public class Environment {
         return null;
     }
 
+    private static final int MAX_SCOPE_DEPTH = 1000;
+
     /**
      * Enter a new lexical scope for block-like constructs.
      */
     public void enterScope() {
+        if (scopes.size() >= MAX_SCOPE_DEPTH) {
+            throw new RuntimeException("Maximum scope depth exceeded");
+        }
         scopes.push(new HashMap<>());
     }
 

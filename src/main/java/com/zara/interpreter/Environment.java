@@ -17,17 +17,15 @@ public class Environment {
     }
 
     public void set(String name, Object value) {
-        Object toStore = (value instanceof Value) ? value : new Value(value);
-
         // Update the nearest existing binding, otherwise create it in the current
         // scope.
         for (Map<String, Object> scope : scopes) {
             if (scope.containsKey(name)) {
-                scope.put(name, toStore);
+                scope.put(name, value);
                 return;
             }
         }
-        scopes.peek().put(name, toStore);
+        scopes.peek().put(name, value);
     }
 
     public Object get(String name) {
@@ -35,8 +33,7 @@ public class Environment {
         // If the variable has not been defined, throw a RuntimeException.
         for (Map<String, Object> scope : scopes) {
             if (scope.containsKey(name)) {
-                Object stored = scope.get(name);
-                return stored instanceof Value v ? v.getValue() : stored;
+                return scope.get(name);
             }
         }
         throw new RuntimeException("Environment Error: Variable '" + name + "' is not defined in the current scope.");
@@ -54,8 +51,7 @@ public class Environment {
     public Object getOrDefault(String name, Object defaultValue) {
         for (Map<String, Object> scope : scopes) {
             if (scope.containsKey(name)) {
-                Object stored = scope.get(name);
-                return stored instanceof Value v ? v.getValue() : stored;
+                return scope.get(name);
             }
         }
         return defaultValue;
@@ -76,8 +72,7 @@ public class Environment {
     public Object retrieveVariable(String name) {
         for (Map<String, Object> scope : scopes) {
             if (scope.containsKey(name)) {
-                Object stored = scope.get(name);
-                return stored instanceof Value v ? v.getValue() : stored;
+                return scope.get(name);
             }
         }
         return null;

@@ -66,6 +66,23 @@ public class Interpreter {
     }
 
     /**
+     * @deprecated Use {@link #run(String)} instead. This method is maintained for backward compatibility.
+     */
+    @Deprecated
+    public void execute(String sourceCode) {
+        run(sourceCode);
+    }
+
+    /**
+     * @deprecated Use {@link #run(List)} instead. This method is maintained for backward compatibility.
+     */
+    @Deprecated
+    public void execute(List<Instruction> instructions) {
+        run(instructions);
+    }
+
+
+    /**
      * Executes a list of instructions within a new scope block.
      * Centralizes scope management for all block-based constructs.
      */
@@ -456,8 +473,13 @@ public class Interpreter {
             throw new IllegalArgumentException("Empty expression");
         }
         String tmp = "__for_tmp_" + (tempCounter++);
-        executeProgramFragment("set " + tmp + " = " + e);
-        return env.get(tmp);
+        env.enterScope();
+        try {
+            executeProgramFragment("set " + tmp + " = " + e);
+            return env.get(tmp);
+        } finally {
+            env.exitScope();
+        }
     }
 
     private static boolean compareValues(Object left, String op, Object right) {

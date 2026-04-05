@@ -45,36 +45,11 @@ public class Interpreter {
     /** Longest-first so {@code <=} does not match as {@code <} first. */
     private static final String[] COMPARISON_OPS = {"<=", ">=", "==", "!=", "<", ">"};
 
-    /**
-     * Execute source: either a full Zara program or a supported C-style {@code for} loop.
-     */
-    public void execute(String sourceCode) {
-        String trimmed = sourceCode == null ? "" : sourceCode.trim();
-        if (trimmed.isEmpty()) {
-            return;
-        }
-
-        if (startsWithForKeyword(trimmed)) {
-            ForParts parts = tryParseForLoop(trimmed);
-            if (parts != null) {
-                runForLoop(parts);
-                return;
-            }
-            throw new IllegalArgumentException(
-                "Unsupported for-loop syntax. Expected: for (init; condition; increment) { body }"
-            );
-        }
-
-        String normalized = normalizeToZara(trimmed);
-        List<Token> tokens = new Tokenizer(normalized).tokenize();
-        List<Instruction> instructions = new Parser(tokens).parse();
-        execute(instructions);
-    }
 
     /**
      * Execute an instruction list produced elsewhere (e.g. tests or tooling).
      */
-    public void execute(List<Instruction> instructions) {
+    public void run(List<Instruction> instructions) {
         for (Instruction instruction : instructions) {
             try {
                 instruction.execute(env);
@@ -106,20 +81,29 @@ public class Interpreter {
     }
 
     /**
-     * Backwards-compatible entry: tokenize, parse, execute (no C-style {@code for} normalization).
+     * Execute source: either a full Zara program or a supported C-style {@code for} loop.
      */
     public void run(String sourceCode) {
-        if (sourceCode == null || sourceCode.trim().isEmpty()) {
+        String trimmed = sourceCode == null ? "" : sourceCode.trim();
+        if (trimmed.isEmpty()) {
             return;
         }
-        String trimmed = sourceCode.trim();
+
         if (startsWithForKeyword(trimmed)) {
-            execute(trimmed);
-            return;
+            ForParts parts = tryParseForLoop(trimmed);
+            if (parts != null) {
+                runForLoop(parts);
+                return;
+            }
+            throw new IllegalArgumentException(
+                "Unsupported for-loop syntax. Expected: for (init; condition; increment) { body }"
+            );
         }
-        List<Token> tokens = new Tokenizer(trimmed).tokenize();
+
+        String normalized = normalizeToZara(trimmed);
+        List<Token> tokens = new Tokenizer(normalized).tokenize();
         List<Instruction> instructions = new Parser(tokens).parse();
-        execute(instructions);
+        run(instructions);
     }
 
     public Object getVariable(String name) {
@@ -318,7 +302,7 @@ public class Interpreter {
         }
         List<Token> tokens = new Tokenizer(n).tokenize();
         List<Instruction> instructions = new Parser(tokens).parse();
-        execute(instructions);
+        run(instructions);
     }
 
     private String normalizeStatement(String stmt) {

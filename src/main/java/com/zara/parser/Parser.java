@@ -65,12 +65,23 @@ public class Parser {
 
     // when condition:
     //     indented body
+    // otherwise:          ← optional
+    //     indented body
     private Instruction parseIf() {
         consume(); // when
         Expression condition = parseExpression();
         consume(); // :
         if (check(TokenType.NEWLINE)) consume();
-        return new IfInstruction(condition, parseBlock());
+        List<Instruction> thenBody = parseBlock();
+
+        List<Instruction> elseBody = new ArrayList<>();
+        if (check(TokenType.OTHERWISE)) {
+            consume();          // otherwise
+            consume();          // :
+            if (check(TokenType.NEWLINE)) consume();
+            elseBody = parseBlock();
+        }
+        return new IfInstruction(condition, thenBody, elseBody);
     }
 
     // loop N:

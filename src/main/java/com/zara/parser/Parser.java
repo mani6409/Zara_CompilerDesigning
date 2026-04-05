@@ -83,17 +83,17 @@ public class Parser {
         return new RepeatInstruction(count, parseBlock());
     }
 
-    // Parse an indented block — lines with INDENT value > 0
+    // Parse an indented block — entered on INDENT token, exited on DEDENT token
     private List<Instruction> parseBlock() {
         List<Instruction> body = new ArrayList<>();
-        while (!check(TokenType.EOF)) {
-            if (!check(TokenType.INDENT)) break;
-            int indent = Integer.parseInt(peek().getValue());
-            if (indent == 0) break; // back to top-level
-            consume(); // consume the INDENT token
+        if (!check(TokenType.INDENT)) return body;  // no block follows
+        consume(); // consume INDENT
+        while (!check(TokenType.EOF) && !check(TokenType.DEDENT)) {
+            if (check(TokenType.NEWLINE)) { consume(); continue; }
             body.add(parseInstruction());
             if (check(TokenType.NEWLINE)) consume();
         }
+        if (check(TokenType.DEDENT)) consume(); // consume DEDENT
         return body;
     }
 

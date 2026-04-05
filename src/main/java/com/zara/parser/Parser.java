@@ -97,21 +97,34 @@ public class Parser {
         return body;
     }
 
-    // Handles + - and comparisons (lowest precedence)
+    // Entry point — delegates to comparison (lowest precedence)
     private Expression parseExpression() {
+        return parseComparison();
+    }
+
+    // Handles > < == != <= >= (lower precedence than + -)
+    private Expression parseComparison() {
+        Expression left = parseAddSub();
+        if (check(TokenType.GREATER) || check(TokenType.LESS)   ||
+            check(TokenType.EQEQ)   || check(TokenType.NOT_EQ)  ||
+            check(TokenType.LESS_EQ)|| check(TokenType.GREATER_EQ)) {
+            String op = consume().getValue();
+            left = new BinaryOpNode(left, op, parseAddSub());
+        }
+        return left;
+    }
+
+    // Handles + - (higher precedence than comparisons)
+    private Expression parseAddSub() {
         Expression left = parseTerm();
         while (check(TokenType.PLUS) || check(TokenType.MINUS)) {
-            String op = consume().getValue();
-            left = new BinaryOpNode(left, op, parseTerm());
-        }
-        if (check(TokenType.GREATER) || check(TokenType.LESS) || check(TokenType.EQEQ)) {
             String op = consume().getValue();
             left = new BinaryOpNode(left, op, parseTerm());
         }
         return left;
     }
 
-    // Handles * / (higher precedence than + -)
+    // Handles * / (highest precedence among binary ops)
     private Expression parseTerm() {
         Expression left = parsePrimary();
         while (check(TokenType.STAR) || check(TokenType.SLASH)) {

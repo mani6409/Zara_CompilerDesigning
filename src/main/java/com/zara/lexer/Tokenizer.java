@@ -118,6 +118,8 @@ public class Tokenizer {
                         case "show" -> TokenType.SHOW;
                         case "when" -> TokenType.WHEN;
                         case "loop" -> TokenType.LOOP;
+                        case "true" -> TokenType.TRUE;
+                        case "false" -> TokenType.FALSE;
                         default -> TokenType.IDENTIFIER;
                     };
                     tokens.add(new Token(type, word, lineNum));

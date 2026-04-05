@@ -240,19 +240,24 @@ public class Interpreter {
             throw new IllegalArgumentException("for-loop increment cannot be empty");
         }
 
-        if (!fp.init.isEmpty()) {
-            executeProgramFragment(normalizeStatement(fp.init));
-        }
-
-        int iterations = 0;
-        while (evaluateCondition(fp.condition)) {
-            if (++iterations > MAX_FOR_ITERATIONS) {
-                throw new RuntimeException(
-                    "for-loop exceeded maximum iterations (" + MAX_FOR_ITERATIONS + ")"
-                );
+        env.enterScope();
+        try {
+            if (!fp.init.isEmpty()) {
+                executeProgramFragment(normalizeStatement(fp.init));
             }
-            executeLoopBody(fp.body);
-            executeProgramFragment(normalizeIncrement(fp.increment));
+
+            int iterations = 0;
+            while (evaluateCondition(fp.condition)) {
+                if (++iterations > MAX_FOR_ITERATIONS) {
+                    throw new RuntimeException(
+                        "for-loop exceeded maximum iterations (" + MAX_FOR_ITERATIONS + ")"
+                    );
+                }
+                executeLoopBody(fp.body);
+                executeProgramFragment(normalizeIncrement(fp.increment));
+            }
+        } finally {
+            env.exitScope();
         }
     }
 

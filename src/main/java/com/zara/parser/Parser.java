@@ -1,16 +1,19 @@
 package com.zara.parser;
 
-import java.util.*;
-import com.zara.lexer.*;
-import com.zara.parser.*;
-import com.zara.parser.ast.*;
-import com.zara.interpreter.*;
-import com.zara.interpreter.instruction.*;
-import com.zara.runtime.*;
-import com.zara.utils.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import com.zara.lexer.Token;
+import com.zara.lexer.TokenType;
+import com.zara.parser.ast.Expression;
+import com.zara.parser.ast.BinaryOpNode;
+import com.zara.parser.ast.NumberNode;
+import com.zara.parser.ast.StringNode;
+import com.zara.parser.ast.VariableNode;
+import com.zara.interpreter.instruction.Instruction;
+import com.zara.interpreter.instruction.AssignInstruction;
+import com.zara.interpreter.instruction.PrintInstruction;
+import com.zara.interpreter.instruction.IfInstruction;
+import com.zara.interpreter.instruction.RepeatInstruction;
 
 public class Parser {
     private final List<Token> tokens;

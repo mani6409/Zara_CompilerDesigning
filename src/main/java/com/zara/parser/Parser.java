@@ -77,7 +77,11 @@ public class Parser {
     //     indented body
     private Instruction parseRepeat() {
         consume(); // loop
-        int count = (int) Double.parseDouble(consume().getValue());
+        double raw = Double.parseDouble(consume().getValue());
+        if (raw != Math.floor(raw) || raw < 0)
+            throw new RuntimeException(
+                "loop count must be a non-negative integer, got: " + raw);
+        int count = (int) raw;
         consume(); // :
         if (check(TokenType.NEWLINE)) consume();
         return new RepeatInstruction(count, parseBlock());

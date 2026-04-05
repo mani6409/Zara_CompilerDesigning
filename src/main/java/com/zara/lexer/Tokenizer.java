@@ -114,12 +114,22 @@ public class Tokenizer {
                         i++;
                     String word = trimmed.substring(start, i);
                     TokenType type = switch (word) {
+<<<<<<< HEAD
                         case "set"       -> TokenType.SET;
                         case "show"      -> TokenType.SHOW;
                         case "when"      -> TokenType.WHEN;
                         case "loop"      -> TokenType.LOOP;
                         case "otherwise" -> TokenType.OTHERWISE;
                         default          -> TokenType.IDENTIFIER;
+=======
+                        case "set" -> TokenType.SET;
+                        case "show" -> TokenType.SHOW;
+                        case "when" -> TokenType.WHEN;
+                        case "loop" -> TokenType.LOOP;
+                        case "true" -> TokenType.TRUE;
+                        case "false" -> TokenType.FALSE;
+                        default -> TokenType.IDENTIFIER;
+>>>>>>> a391127 (Add support for boolean literals (true/false) in tokenizer)
                     };
                     tokens.add(new Token(type, word, lineNum));
                     continue;

@@ -160,8 +160,8 @@ public class Tokenizer {
                     case '<' -> tokens.add(new Token(TokenType.LESS, "<", lineNum));
                     case '=' -> tokens.add(new Token(TokenType.EQUALS, "=", lineNum));
                     case ':' -> tokens.add(new Token(TokenType.COLON, ":", lineNum));
-                    default -> {
-                        /* ignore */ }
+                    default -> throw new RuntimeException(
+                            "Unrecognised character '" + c + "' at line " + lineNum);
                 }
                 i++;
             }

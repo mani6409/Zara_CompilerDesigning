@@ -40,6 +40,7 @@ public class Tokenizer {
                     indent += 4;
                 else
                     break;
+                index++;
             }
 
             String trimmed = rawLine.strip();

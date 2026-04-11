@@ -135,6 +135,21 @@ public class Tokenizer {
                         case "==" -> { tokens.add(new Token(TokenType.EQEQ,       "==", lineNum)); i += 2; continue; }
                     }
                 }
+                if (c == '!' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
+                    tokens.add(new Token(TokenType.NOT_EQ, "!=", lineNum));
+                    i += 2;
+                    continue;
+                }
+                if (c == '<' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
+                    tokens.add(new Token(TokenType.LESS_EQ, "<=", lineNum));
+                    i += 2;
+                    continue;
+                }
+                if (c == '>' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
+                    tokens.add(new Token(TokenType.GREATER_EQ, ">=", lineNum));
+                    i += 2;
+                    continue;
+                }
 
                 switch (c) {
                     case '+' -> tokens.add(new Token(TokenType.PLUS, "+", lineNum));

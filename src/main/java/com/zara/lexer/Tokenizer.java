@@ -1,14 +1,5 @@
 package com.zara.lexer;
 
-import java.util.*;
-import com.zara.lexer.*;
-import com.zara.parser.*;
-import com.zara.parser.ast.*;
-import com.zara.interpreter.*;
-import com.zara.interpreter.instruction.*;
-import com.zara.runtime.*;
-import com.zara.utils.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -40,6 +31,7 @@ public class Tokenizer {
                     indent += 4;
                 else
                     break;
+                index++;
             }
 
             String trimmed = rawLine.strip();
@@ -134,6 +126,21 @@ public class Tokenizer {
                         case "==" -> { tokens.add(new Token(TokenType.EQEQ,       "==", lineNum)); i += 2; continue; }
                     }
                 }
+                if (c == '!' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
+                    tokens.add(new Token(TokenType.NOT_EQ, "!=", lineNum));
+                    i += 2;
+                    continue;
+                }
+                if (c == '<' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
+                    tokens.add(new Token(TokenType.LESS_EQ, "<=", lineNum));
+                    i += 2;
+                    continue;
+                }
+                if (c == '>' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
+                    tokens.add(new Token(TokenType.GREATER_EQ, ">=", lineNum));
+                    i += 2;
+                    continue;
+                }
 
                 switch (c) {
                     case '+' -> tokens.add(new Token(TokenType.PLUS, "+", lineNum));
@@ -144,8 +151,8 @@ public class Tokenizer {
                     case '<' -> tokens.add(new Token(TokenType.LESS, "<", lineNum));
                     case '=' -> tokens.add(new Token(TokenType.EQUALS, "=", lineNum));
                     case ':' -> tokens.add(new Token(TokenType.COLON, ":", lineNum));
-                    default -> {
-                        /* ignore */ }
+                    default -> throw new RuntimeException(
+                            "Unrecognised character '" + c + "' at line " + lineNum);
                 }
                 i++;
             }

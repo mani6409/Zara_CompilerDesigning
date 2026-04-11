@@ -1,7 +1,5 @@
 package com.zara.interpreter;
 
-import com.zara.interpreter.Interpreter;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,47 +15,52 @@ public class InterpreterIntegrationTest {
 
     @Test
     public void testSimpleAssignment() {
-        interpreter.run("x = 5;");
-        assertEquals(5, interpreter.getVariable("x"));
+        interpreter.run("set x = 5;");
+        assertEquals(5, ((Number) interpreter.getVariable("x")).intValue());
     }
 
     @Test
     public void testArithmeticOperations() {
-        interpreter.run("x = 5;");
-        interpreter.run("y = 10;");
-        interpreter.run("result = x + y;");
-        assertEquals(15, interpreter.getVariable("result"));
-        interpreter.run("result = y - x;");
-        assertEquals(5, interpreter.getVariable("result"));
-        interpreter.run("result = x * y;");
-        assertEquals(50, interpreter.getVariable("result"));
-        interpreter.run("result = y / x;");
-        assertEquals(2, interpreter.getVariable("result"));
+        interpreter.run("set x = 5;");
+        interpreter.run("set y = 10;");
+        interpreter.run("set result = x + y;");
+        assertEquals(15, ((Number) interpreter.getVariable("result")).intValue());
+
+        interpreter.run("set result = y - x;");
+        assertEquals(5, ((Number) interpreter.getVariable("result")).intValue());
+
+        interpreter.run("set result = x * y;");
+        assertEquals(50, ((Number) interpreter.getVariable("result")).intValue());
+
+        interpreter.run("set result = y / x;");
+        assertEquals(2, ((Number) interpreter.getVariable("result")).intValue());
     }
 
     @Test
     public void testComparisons() {
-        interpreter.run("x = 5;");
-        interpreter.run("y = 10;");
-        interpreter.run("result = x < y;");
+        interpreter.run("set x = 5;");
+        interpreter.run("set y = 10;");
+        interpreter.run("set result = x < y;");
         assertTrue((Boolean) interpreter.getVariable("result"));
-        interpreter.run("result = x > y;");
+
+        interpreter.run("set result = x > y;");
         assertFalse((Boolean) interpreter.getVariable("result"));
-        interpreter.run("result = x == 5;");
+
+        interpreter.run("set result = x == 5;");
         assertTrue((Boolean) interpreter.getVariable("result"));
     }
 
     @Test
     public void testLoops() {
-        interpreter.run("sum = 0;");
+        interpreter.run("set sum = 0;");
         interpreter.run("for (i = 1; i <= 5; i = i + 1) { sum = sum + i; }");
-        assertEquals(15, interpreter.getVariable("sum"));
+        assertEquals(15, ((Number) interpreter.getVariable("sum")).intValue());
     }
 
     @Test
     public void testVariableReferences() {
-        interpreter.run("x = 5;");
-        interpreter.run("y = x + 5;");
-        assertEquals(10, interpreter.getVariable("y"));
+        interpreter.run("set x = 5;");
+        interpreter.run("set y = x + 5;");
+        assertEquals(10, ((Number) interpreter.getVariable("y")).intValue());
     }
 }

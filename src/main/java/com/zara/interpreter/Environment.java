@@ -5,7 +5,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.zara.runtime.Value;
 
 public class Environment {
     // Scope stack: top (head) scope is where new bindings are created.

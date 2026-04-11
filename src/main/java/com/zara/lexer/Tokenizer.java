@@ -114,21 +114,26 @@ public class Tokenizer {
                         i++;
                     String word = trimmed.substring(start, i);
                     TokenType type = switch (word) {
-                        case "set" -> TokenType.SET;
-                        case "show" -> TokenType.SHOW;
-                        case "when" -> TokenType.WHEN;
-                        case "loop" -> TokenType.LOOP;
-                        default -> TokenType.IDENTIFIER;
+                        case "set"       -> TokenType.SET;
+                        case "show"      -> TokenType.SHOW;
+                        case "when"      -> TokenType.WHEN;
+                        case "loop"      -> TokenType.LOOP;
+                        case "otherwise" -> TokenType.OTHERWISE;
+                        default          -> TokenType.IDENTIFIER;
                     };
                     tokens.add(new Token(type, word, lineNum));
                     continue;
                 }
 
-                // Symbols
-                if (c == '=' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
-                    tokens.add(new Token(TokenType.EQEQ, "==", lineNum));
-                    i += 2;
-                    continue;
+                // Multi-char symbols: !=  <=  >=  ==
+                if (i + 1 < trimmed.length()) {
+                    String two = "" + c + trimmed.charAt(i + 1);
+                    switch (two) {
+                        case "!=" -> { tokens.add(new Token(TokenType.NOT_EQ,     "!=", lineNum)); i += 2; continue; }
+                        case "<=" -> { tokens.add(new Token(TokenType.LESS_EQ,    "<=", lineNum)); i += 2; continue; }
+                        case ">=" -> { tokens.add(new Token(TokenType.GREATER_EQ, ">=", lineNum)); i += 2; continue; }
+                        case "==" -> { tokens.add(new Token(TokenType.EQEQ,       "==", lineNum)); i += 2; continue; }
+                    }
                 }
 
                 switch (c) {

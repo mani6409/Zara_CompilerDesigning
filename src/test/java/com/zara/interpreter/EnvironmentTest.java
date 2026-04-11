@@ -1,22 +1,23 @@
 package com.zara.interpreter;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnvironmentTest {
+
     @Test
     public void testVariableStorageAndRetrieval() {
         Environment env = new Environment();
         env.set("x", 10);
         env.set("y", 20);
 
-        assertEquals(10, env.get("x"));
-        assertEquals(20, env.get("y"));
+        assertEquals(10, ((Number) env.get("x")).intValue());
+        assertEquals(20, ((Number) env.get("y")).intValue());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testRetrieveNonExistentVariable() {
         Environment env = new Environment();
-        env.get("z");
+        assertThrows(RuntimeException.class, () -> env.get("z"));
     }
 }

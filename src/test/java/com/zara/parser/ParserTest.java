@@ -1,11 +1,15 @@
 package com.zara.parser;
+
 import com.zara.lexer.Tokenizer;
 import com.zara.lexer.Token;
+
 import com.zara.interpreter.instruction.Instruction;
 import com.zara.interpreter.instruction.AssignInstruction;
 import com.zara.interpreter.instruction.PrintInstruction;
 import com.zara.interpreter.instruction.IfInstruction;
 import com.zara.interpreter.instruction.RepeatInstruction;
+
+import com.zara.runtime.Environment;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,81 +31,96 @@ public class ParserTest {
     @Test
     void testParsingAssignment() {
         List<Instruction> instructions = parse("set x = 5");
-        assertEquals(1, instructions.size(),
-            "Expected exactly one instruction for 'set x = 5'");
-        assertInstanceOf(AssignInstruction.class, instructions.get(0),
-            "Expected an AssignInstruction");
+
+        assertEquals(1, instructions.size());
+        assertInstanceOf(AssignInstruction.class, instructions.get(0));
+
+        // Execute instruction and verify environment
+        Environment env = new Environment();
+        instructions.get(0).execute(env);
+
+        assertEquals(5.0, env.get("x"));
     }
 
     @Test
     void testParsingPrint() {
         List<Instruction> instructions = parse("show \"hello\"");
-        assertEquals(1, instructions.size(),
-            "Expected exactly one instruction for 'show \"hello\"'");
-        assertInstanceOf(PrintInstruction.class, instructions.get(0),
-            "Expected a PrintInstruction");
+
+        assertEquals(1, instructions.size());
+        assertInstanceOf(PrintInstruction.class, instructions.get(0));
     }
 
     @Test
     void testParsingIfWithoutElse() {
-        String src = "when x > 0:\n    show \"positive\"\n";
+        String src =
+                "set x = 5\n" +
+                "when x > 0:\n" +
+                "    show \"positive\"\n";
+
         List<Instruction> instructions = parse(src);
-        assertEquals(1, instructions.size(),
-            "Expected one instruction for a when block");
-        assertInstanceOf(IfInstruction.class, instructions.get(0),
-            "Expected an IfInstruction");
+
+        assertEquals(2, instructions.size());
+        assertInstanceOf(IfInstruction.class, instructions.get(1));
     }
 
     @Test
     void testParsingIfWithOtherwise() {
         String src =
-            "when x > 0:\n" +
-            "    show \"pos\"\n" +
-            "otherwise:\n" +
-            "    show \"non-pos\"\n";
+                "set x = -1\n" +
+                "when x > 0:\n" +
+                "    show \"pos\"\n" +
+                "otherwise:\n" +
+                "    show \"non-pos\"\n";
+
         List<Instruction> instructions = parse(src);
-        assertEquals(1, instructions.size(),
-            "Expected one top-level instruction for when/otherwise");
-        assertInstanceOf(IfInstruction.class, instructions.get(0),
-            "Expected an IfInstruction");
+
+        assertEquals(2, instructions.size());
+        assertInstanceOf(IfInstruction.class, instructions.get(1));
     }
 
     @Test
     void testParsingLoop() {
-        String src = "loop 3:\n    show \"hi\"\n";
+        String src =
+                "loop 3:\n" +
+                "    show \"hi\"\n";
+
         List<Instruction> instructions = parse(src);
-        assertEquals(1, instructions.size(),
-            "Expected one instruction for a loop block");
-        assertInstanceOf(RepeatInstruction.class, instructions.get(0),
-            "Expected a RepeatInstruction");
+
+        assertEquals(1, instructions.size());
+        assertInstanceOf(RepeatInstruction.class, instructions.get(0));
     }
 
     @Test
     void testParsingMultipleInstructions() {
         String src =
-            "set a = 1\n" +
-            "set b = 2\n" +
-            "show a\n";
+                "set a = 1\n" +
+                "set b = 2\n" +
+                "show a\n";
+
         List<Instruction> instructions = parse(src);
-        assertEquals(3, instructions.size(),
-            "Expected three top-level instructions");
+
+        assertEquals(3, instructions.size());
     }
 
     @Test
     void testArithmeticPrecedence() {
-        // 'a + b > c' — should parse without exception
-        // The comparison must bind looser than addition
-        assertDoesNotThrow(() -> parse("when a + b > c:\n    show \"ok\"\n"),
-            "Arithmetic + comparison should parse cleanly with correct precedence");
+        assertDoesNotThrow(() ->
+                parse("when a + b > c:\n    show \"ok\"\n")
+        );
     }
 
     @Test
     void testAllComparisonOperators() {
+
         String[] ops = { ">", "<", "==", "!=", "<=", ">=" };
+
         for (String op : ops) {
-            String src = "when x " + op + " 0:\n    show \"ok\"\n";
-            assertDoesNotThrow(() -> parse(src),
-                "Operator '" + op + "' should be parseable");
+
+            String src =
+                    "when x " + op + " 0:\n" +
+                    "    show \"ok\"\n";
+
+            assertDoesNotThrow(() -> parse(src));
         }
     }
 
@@ -111,31 +130,32 @@ public class ParserTest {
 
     @Test
     void testParsingInvalidInput_FloatLoopCount() {
-        RuntimeException ex = assertThrows(RuntimeException.class,
-            () -> parse("loop 3.7:\n    show \"hi\"\n"),
-            "A float loop count should throw RuntimeException");
-        assertTrue(ex.getMessage().contains("non-negative integer"),
-            "Error message should mention 'non-negative integer', got: " + ex.getMessage());
+
+        RuntimeException ex = assertThrows(
+                RuntimeException.class,
+                () -> parse("loop 3.7:\n    show \"hi\"\n")
+        );
+
+        assertTrue(ex.getMessage().contains("non-negative integer"));
     }
 
     @Test
     void testParsingInvalidInput_NegativeLoopCount() {
-        // "loop -2" tokenises as LOOP, MINUS("-"), NUMBER("2").
-        // parseRepeat() consumes the MINUS token as the count value, so
-        // Double.parseDouble("-") throws NumberFormatException before the
-        // controlled "non-negative integer" message is ever reached.
-        // We therefore only assert that *some* RuntimeException is thrown.
-        assertThrows(RuntimeException.class,
-            () -> parse("loop -2:\n    show \"hi\"\n"),
-            "A negative loop count should throw RuntimeException");
+
+        assertThrows(
+                RuntimeException.class,
+                () -> parse("loop -2:\n    show \"hi\"\n")
+        );
     }
 
     @Test
     void testParsingInvalidInput_UnexpectedToken() {
-        RuntimeException ex = assertThrows(RuntimeException.class,
-            () -> parse("unknown stuff here"),
-            "An unrecognised keyword should throw RuntimeException");
-        assertNotNull(ex.getMessage(),
-            "Exception should carry a message");
+
+        RuntimeException ex = assertThrows(
+                RuntimeException.class,
+                () -> parse("unknown stuff here")
+        );
+
+        assertNotNull(ex.getMessage());
     }
 }

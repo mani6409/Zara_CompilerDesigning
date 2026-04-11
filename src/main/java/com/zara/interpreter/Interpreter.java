@@ -65,21 +65,6 @@ public class Interpreter {
         }
     }
 
-    /**
-     * @deprecated Use {@link #run(String)} instead. This method is maintained for backward compatibility.
-     */
-    @Deprecated
-    public void execute(String sourceCode) {
-        run(sourceCode);
-    }
-
-    /**
-     * @deprecated Use {@link #run(List)} instead. This method is maintained for backward compatibility.
-     */
-    @Deprecated
-    public void execute(List<Instruction> instructions) {
-        run(instructions);
-    }
 
 
     /**

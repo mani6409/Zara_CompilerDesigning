@@ -1,3 +1,5 @@
+package com.zara.interpreter;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,11 +38,11 @@ public class InterpreterIntegrationTest {
         interpreter.run("x = 5;");
         interpreter.run("y = 10;");
         interpreter.run("result = x < y;");
-        assertTrue(interpreter.getVariable("result"));
+        assertTrue((Boolean) interpreter.getVariable("result"));
         interpreter.run("result = x > y;");
-        assertFalse(interpreter.getVariable("result"));
+        assertFalse((Boolean) interpreter.getVariable("result"));
         interpreter.run("result = x == 5;");
-        assertTrue(interpreter.getVariable("result"));
+        assertTrue((Boolean) interpreter.getVariable("result"));
     }
 
     @Test

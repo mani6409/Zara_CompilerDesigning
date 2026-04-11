@@ -1,7 +1,7 @@
 package com.zara.interpreter;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnvironmentTest {
     @Test
@@ -14,9 +14,11 @@ public class EnvironmentTest {
         assertEquals(20, env.get("y"));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testRetrieveNonExistentVariable() {
         Environment env = new Environment();
-        env.get("z");
+        assertThrows(RuntimeException.class, () -> {
+            env.get("z");
+        });
     }
 }

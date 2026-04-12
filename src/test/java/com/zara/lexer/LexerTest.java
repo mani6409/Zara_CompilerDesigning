@@ -29,13 +29,15 @@ public class LexerTest {
 
     @Test
     public void testWhitespaceHandling() {
-        // Leading/trailing spaces should be stripped; first real token is SET
+        // Leading spaces trigger an INDENT token before the actual keyword;
+        // so the second token is SET and the third is the identifier
         Tokenizer tokenizer = new Tokenizer("   set b = 20");
         List<Token> tokens = tokenizer.tokenize();
 
-        assertEquals(TokenType.SET, tokens.get(0).getType());
-        assertEquals(TokenType.IDENTIFIER, tokens.get(1).getType());
-        assertEquals("b", tokens.get(1).getValue());
+        assertEquals(TokenType.INDENT,     tokens.get(0).getType());
+        assertEquals(TokenType.SET,        tokens.get(1).getType());
+        assertEquals(TokenType.IDENTIFIER, tokens.get(2).getType());
+        assertEquals("b", tokens.get(2).getValue());
     }
 
     @Test

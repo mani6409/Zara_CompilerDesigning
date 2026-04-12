@@ -66,7 +66,7 @@ public class ParserTest {
     @Test
     void testParsingIfWithOtherwise() {
         String src =
-                "set x = -1\n" +
+                "set x = 1\n" +
                 "when x > 0:\n" +
                 "    show \"pos\"\n" +
                 "otherwise:\n" +

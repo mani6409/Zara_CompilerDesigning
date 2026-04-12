@@ -126,7 +126,7 @@ public class ExpressionTest {
     }
 
     // ---------------------------------------------------------------
-    // BinaryOpNode — comparison operators
+    // BinaryOpNode — comparison operators (only >, <, == are supported)
     // ---------------------------------------------------------------
 
     @Test
@@ -148,6 +148,13 @@ public class ExpressionTest {
         BinaryOpNode node = new BinaryOpNode(
             new NumberNode(1), "<", new NumberNode(4));
         assertEquals(Boolean.TRUE, node.evaluate(env));
+    }
+
+    @Test
+    void testBinaryOpNode_lessThan_false() {
+        BinaryOpNode node = new BinaryOpNode(
+            new NumberNode(9), "<", new NumberNode(4));
+        assertEquals(Boolean.FALSE, node.evaluate(env));
     }
 
     @Test
@@ -217,5 +224,15 @@ public class ExpressionTest {
         assertThrows(RuntimeException.class,
             () -> node.evaluate(env),
             "'-' on a String operand should throw RuntimeException");
+    }
+
+    @Test
+    void testBinaryOpNode_unsupportedOperator_throws() {
+        // Operators like !=, <=, >= are not in BinaryOpNode — should throw
+        BinaryOpNode node = new BinaryOpNode(
+            new NumberNode(5), "!=", new NumberNode(3));
+        assertThrows(RuntimeException.class,
+            () -> node.evaluate(env),
+            "Unknown operator '!=' should throw RuntimeException");
     }
 }

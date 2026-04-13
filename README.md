@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Zara Interpreter
 
 A custom programming language interpreter written in Java. **ZARA** is designed to be simple, clean, and intuitive, supporting core programming constructs such as variables, arithmetic operations, conditionals, and loops.
@@ -121,3 +122,6 @@ Contributions are welcome!
 ## 📜 License
 
 This project is open-source. Add a license if not already included.
+=======
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kPCOqlbB)
+>>>>>>> f4e56d70b1a86b55aab3f46491705a1fa4f9bf51

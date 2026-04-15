@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class Tokenizer {
+
     private final String source;
 
     public Tokenizer(String source) {
@@ -12,133 +13,158 @@ public class Tokenizer {
     }
 
     public List<Token> tokenize() {
+
         List<Token> tokens = new ArrayList<>();
+
         String[] lines = source.split("\n", -1);
+
         int lineNum = 1;
 
-        Stack<Integer> indentStack = new Stack<>(); // UPDATED
+        Stack<Integer> indentStack = new Stack<>();
         indentStack.push(0);
 
         for (String rawLine : lines) {
-            // Count leading spaces for indentation
+
             int indent = 0;
             int index = 0;
+
             while (index < rawLine.length()) {
                 char c = rawLine.charAt(index);
+
                 if (c == ' ')
                     indent++;
                 else if (c == '\t')
                     indent += 4;
                 else
                     break;
+
                 index++;
             }
 
             String trimmed = rawLine.strip();
 
-            // Skip blank lines and comment lines
             if (trimmed.isEmpty() || trimmed.startsWith("#")) {
                 lineNum++;
                 continue;
             }
 
-            // UPDATED: INDENT / DEDENT LOGIC
             int currentIndent = indentStack.peek();
 
             if (indent > currentIndent) {
                 indentStack.push(indent);
-                tokens.add(new Token(TokenType.INDENT, "", lineNum)); // UPDATED
+                tokens.add(new Token(TokenType.INDENT, "", lineNum));
             } else if (indent < currentIndent) {
+
                 while (indentStack.size() > 0 && indent < indentStack.peek()) {
                     indentStack.pop();
-                    tokens.add(new Token(TokenType.DEDENT, "", lineNum)); // UPDATED
+                    tokens.add(new Token(TokenType.DEDENT, "", lineNum));
                 }
 
                 if (indentStack.peek() != indent) {
-                    throw new RuntimeException("Invalid indentation at line " + lineNum); // UPDATED
+                    throw new RuntimeException("Invalid indentation at line " + lineNum);
                 }
             }
 
-            // // Emit INDENT token so parser knows this line's depth
-            // tokens.add(new Token(TokenType.INDENT, String.valueOf(indent), lineNum));
-
-            // Tokenize the content of this line
             int i = 0;
+
             while (i < trimmed.length()) {
+
                 char c = trimmed.charAt(i);
 
                 if (c == ' ' || c == '\t') {
                     i++;
                     continue;
                 }
-                if (c == '#')
-                    break; // inline comment
 
-                // Number
+                if (c == '#')
+                    break;
+
+                // ===== Numbers =====
                 if (Character.isDigit(c)) {
                     int start = i;
-                    while (i < trimmed.length() && (Character.isDigit(trimmed.charAt(i)) || trimmed.charAt(i) == '.'))
+
+                    while (i < trimmed.length() &&
+                            (Character.isDigit(trimmed.charAt(i)) || trimmed.charAt(i) == '.'))
                         i++;
-                    tokens.add(new Token(TokenType.NUMBER, trimmed.substring(start, i), lineNum));
+
+                    tokens.add(new Token(TokenType.NUMBER,
+                            trimmed.substring(start, i), lineNum));
                     continue;
                 }
 
-                // String literal
+                // ===== Strings =====
                 if (c == '"') {
                     i++;
                     int start = i;
+
                     while (i < trimmed.length() && trimmed.charAt(i) != '"')
                         i++;
-                    if (i >= trimmed.length()) { // error handling
+
+                    if (i >= trimmed.length()) {
                         throw new RuntimeException("Unterminated string at line " + lineNum);
                     }
-                    tokens.add(new Token(TokenType.STRING, trimmed.substring(start, i), lineNum));
+
+                    tokens.add(new Token(TokenType.STRING,
+                            trimmed.substring(start, i), lineNum));
+
                     i++;
                     continue;
                 }
 
-                // Word
+                // ===== Identifiers / Keywords =====
                 if (Character.isLetter(c) || c == '_') {
                     int start = i;
-                    while (i < trimmed.length()
-                            && (Character.isLetterOrDigit(trimmed.charAt(i)) || trimmed.charAt(i) == '_'))
+
+                    while (i < trimmed.length() &&
+                            (Character.isLetterOrDigit(trimmed.charAt(i)) || trimmed.charAt(i) == '_'))
                         i++;
+
                     String word = trimmed.substring(start, i);
+
                     TokenType type = switch (word) {
                         case "set" -> TokenType.SET;
                         case "show" -> TokenType.SHOW;
                         case "when" -> TokenType.WHEN;
                         case "loop" -> TokenType.LOOP;
+                        case "otherwise" -> TokenType.OTHERWISE;
                         case "true" -> TokenType.TRUE;
                         case "false" -> TokenType.FALSE;
                         default -> TokenType.IDENTIFIER;
                     };
+
                     tokens.add(new Token(type, word, lineNum));
                     continue;
                 }
 
-                // Symbols
-                if (c == '=' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
-                    tokens.add(new Token(TokenType.EQEQ, "==", lineNum));
-                    i += 2;
-                    continue;
-                }
-                if (c == '!' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
-                    tokens.add(new Token(TokenType.NOT_EQ, "!=", lineNum));
-                    i += 2;
-                    continue;
-                }
-                if (c == '<' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
-                    tokens.add(new Token(TokenType.LESS_EQ, "<=", lineNum));
-                    i += 2;
-                    continue;
-                }
-                if (c == '>' && i + 1 < trimmed.length() && trimmed.charAt(i + 1) == '=') {
-                    tokens.add(new Token(TokenType.GREATER_EQ, ">=", lineNum));
-                    i += 2;
-                    continue;
+                // ===== Multi-character operators =====
+                if (i + 1 < trimmed.length()) {
+                    String two = "" + c + trimmed.charAt(i + 1);
+
+                    switch (two) {
+                        case "!=" -> {
+                            tokens.add(new Token(TokenType.NOT_EQ, "!=", lineNum));
+                            i += 2;
+                            continue;
+                        }
+                        case "<=" -> {
+                            tokens.add(new Token(TokenType.LESS_EQ, "<=", lineNum));
+                            i += 2;
+                            continue;
+                        }
+                        case ">=" -> {
+                            tokens.add(new Token(TokenType.GREATER_EQ, ">=", lineNum));
+                            i += 2;
+                            continue;
+                        }
+                        case "==" -> {
+                            tokens.add(new Token(TokenType.EQEQ, "==", lineNum));
+                            i += 2;
+                            continue;
+                        }
+                    }
                 }
 
+                // ===== Single-character tokens =====
                 switch (c) {
                     case '+' -> tokens.add(new Token(TokenType.PLUS, "+", lineNum));
                     case '-' -> tokens.add(new Token(TokenType.MINUS, "-", lineNum));
@@ -148,9 +174,11 @@ public class Tokenizer {
                     case '<' -> tokens.add(new Token(TokenType.LESS, "<", lineNum));
                     case '=' -> tokens.add(new Token(TokenType.EQUALS, "=", lineNum));
                     case ':' -> tokens.add(new Token(TokenType.COLON, ":", lineNum));
+
                     default -> throw new RuntimeException(
                             "Unrecognised character '" + c + "' at line " + lineNum);
                 }
+
                 i++;
             }
 
@@ -158,13 +186,13 @@ public class Tokenizer {
             lineNum++;
         }
 
-        // Close remaining indents
         while (indentStack.size() > 1) {
             indentStack.pop();
             tokens.add(new Token(TokenType.DEDENT, "", lineNum));
         }
 
         tokens.add(new Token(TokenType.EOF, "", lineNum));
+
         return tokens;
     }
 }

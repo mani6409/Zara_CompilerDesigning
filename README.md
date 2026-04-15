@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kPCOqlbB)
+
 # Zara Interpreter
 
 A custom programming language interpreter written in Java. **Zara** is a simple, clean, and readable language supporting variables, arithmetic, conditionals, loops, and a C-style `for` construct — all built on a classic Tokenizer → Parser → Interpreter pipeline.
@@ -386,7 +387,4 @@ See [ToDoList](ToDoList) for the full phased roadmap. Priority items:
 
 ## License
 
-This project is open-source. No license file is present in the repository — add one before public distribution.
-=======
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kPCOqlbB)
->>>>>>> f4e56d7 (add deadline)
+This project is open-source. Add a license if not already included.

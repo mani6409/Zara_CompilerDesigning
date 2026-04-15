@@ -21,6 +21,22 @@ class TokenizerTest {
         assertEquals(TokenType.NUMBER,     tokens.get(3).getType());
     }
 
+    // ✅ Strict version from your branch (important!)
+    @Test
+    void testTokenizeFullSequence() {
+        String input = "set x = 10";
+        Tokenizer tokenizer = new Tokenizer(input);
+        List<Token> tokens = tokenizer.tokenize();
+
+        assertEquals(6, tokens.size());
+        assertEquals(TokenType.SET, tokens.get(0).getType());
+        assertEquals(TokenType.IDENTIFIER, tokens.get(1).getType());
+        assertEquals(TokenType.EQUALS, tokens.get(2).getType());
+        assertEquals(TokenType.NUMBER, tokens.get(3).getType());
+        assertEquals(TokenType.NEWLINE, tokens.get(4).getType());
+        assertEquals(TokenType.EOF, tokens.get(5).getType());
+    }
+
     @Test
     void testTokenizeNumber() {
         String input = "42";
@@ -64,6 +80,7 @@ class TokenizerTest {
     void testUnterminatedStringThrowsException() {
         String input = "\"hello";
         Tokenizer tokenizer = new Tokenizer(input);
+
         assertThrows(RuntimeException.class, tokenizer::tokenize);
     }
 }

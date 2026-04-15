@@ -1,3 +1,4 @@
 set x = 10.2.3
 set y = 20
-show x + y
+set z = 27
+show x + y + z

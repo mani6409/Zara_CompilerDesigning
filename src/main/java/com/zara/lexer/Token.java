@@ -15,26 +15,30 @@ public class Token {
 
     // Constructor to initialize a Token object with type, value, and line number
     public Token(TokenType type, String value, int line) {
-        this.type = type;   // Assign token type
-        this.value = value; // Assign token value
-        this.line = line;   // Assign line number
+        this.type = type;
+        this.value = value;
+        this.line = line;
     }
 
     // Getter method to get the token type
-    public TokenType getType() { return type; }
+    public TokenType getType() {
+        return type;
+    }
 
     // Getter method to get the token value
-    public String getValue()   { return value; }
+    public String getValue() {
+        return value;
+    }
 
     // Getter method to get the line number
-    public int getLine()       { return line; }
+    public int getLine() {
+        return line;
+    }
 
     // This method is automatically called when we print the token
     // It returns a readable string representation of the token
     @Override
     public String toString() {
-        // Format: [TYPE "value" LlineNumber]
-        // Example: [IDENTIFIER "x" L5]
         return "[" + type + " \"" + value + "\" L" + line + "]";
     }
 }

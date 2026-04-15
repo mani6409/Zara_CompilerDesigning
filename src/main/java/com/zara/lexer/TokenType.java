@@ -12,37 +12,42 @@ public enum TokenType {
 
     // === Arithmetic operators ===
 
-    PLUS,   // '+' operator (addition)
-    MINUS,  // '-' operator (subtraction)
-    STAR,   // '*' operator (multiplication)
-    SLASH,  // '/' operator (division)
+    PLUS,   // '+'
+    MINUS,  // '-'
+    STAR,   // '*'
+    SLASH,  // '/'
 
     // === Comparison operators ===
 
-    GREATER,     // '>' operator
-    LESS,        // '<' operator
-    EQUALS,      // '=' operator (assignment or simple equality depending on language design)
-    EQEQ,        // '==' operator (equality check)
-    NOT_EQ,      // '!=' operator (not equal)
-    LESS_EQ,     // '<=' operator
-    GREATER_EQ,  // '>=' operator
+    GREATER,     // '>'
+    LESS,        // '<'
+    EQUALS,      // '='
+    EQEQ,        // '=='
+    NOT_EQ,      // '!='
+    LESS_EQ,     // '<='
+    GREATER_EQ,  // '>='
 
-    // === Keywords (reserved words in your language) ===
+    // === Keywords ===
 
-    SET,        // Keyword for assigning values (e.g., set x = 10)
-    SHOW,       // Keyword for displaying output (like print)
-    WHEN,       // Conditional keyword (similar to "if")
-    LOOP,       // Loop keyword (like while/for)
-    OTHERWISE,  // Alternative condition (like else)
+    SET,
+    SHOW,
+    WHEN,
+    LOOP,
+    OTHERWISE,
 
-    // === Structural tokens (used for formatting / parsing structure) ===
+    // === Boolean literals ===
 
-    INDENT,   // Represents increase in indentation (like Python blocks)
-    DEDENT,   // Represents decrease in indentation
-    COLON,    // ':' symbol (used in conditions, loops, etc.)
-    NEWLINE,  // End of a line
+    TRUE,
+    FALSE,
+
+    // === Structural tokens ===
+
+    INDENT,
+    DEDENT,
+    COLON,
+    NEWLINE,
 
     // === Special token ===
 
-    EOF       // End Of File (marks the end of input)
+    EOF
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-// This class is responsible for converting raw source code (string)
-// into a list of tokens (Token objects).
 public class Tokenizer {
 
     private final String source;
@@ -38,7 +36,7 @@ public class Tokenizer {
                 else if (c == '\t')
                     indent += 4;
                 else
-                    break; // stop when actual content starts
+                    break;
 
                 index++;
             }
@@ -81,6 +79,7 @@ public class Tokenizer {
                 if (c == '#')
                     break;
 
+                // ===== Numbers =====
                 if (Character.isDigit(c)) {
                     int start = i;
 
@@ -93,6 +92,7 @@ public class Tokenizer {
                     continue;
                 }
 
+                // ===== Strings =====
                 if (c == '"') {
                     i++;
                     int start = i;
@@ -111,6 +111,7 @@ public class Tokenizer {
                     continue;
                 }
 
+                // ===== Identifiers / Keywords =====
                 if (Character.isLetter(c) || c == '_') {
                     int start = i;
 
@@ -126,6 +127,8 @@ public class Tokenizer {
                         case "when" -> TokenType.WHEN;
                         case "loop" -> TokenType.LOOP;
                         case "otherwise" -> TokenType.OTHERWISE;
+                        case "true" -> TokenType.TRUE;
+                        case "false" -> TokenType.FALSE;
                         default -> TokenType.IDENTIFIER;
                     };
 
@@ -133,6 +136,7 @@ public class Tokenizer {
                     continue;
                 }
 
+                // ===== Multi-character operators =====
                 if (i + 1 < trimmed.length()) {
                     String two = "" + c + trimmed.charAt(i + 1);
 
@@ -160,6 +164,7 @@ public class Tokenizer {
                     }
                 }
 
+                // ===== Single-character tokens =====
                 switch (c) {
                     case '+' -> tokens.add(new Token(TokenType.PLUS, "+", lineNum));
                     case '-' -> tokens.add(new Token(TokenType.MINUS, "-", lineNum));
@@ -169,7 +174,9 @@ public class Tokenizer {
                     case '<' -> tokens.add(new Token(TokenType.LESS, "<", lineNum));
                     case '=' -> tokens.add(new Token(TokenType.EQUALS, "=", lineNum));
                     case ':' -> tokens.add(new Token(TokenType.COLON, ":", lineNum));
-                    default -> { }
+
+                    default -> throw new RuntimeException(
+                            "Unrecognised character '" + c + "' at line " + lineNum);
                 }
 
                 i++;

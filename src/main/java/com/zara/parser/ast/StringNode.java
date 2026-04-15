@@ -1,23 +1,23 @@
 package com.zara.parser.ast;
 
-import java.util.*;
-import com.zara.lexer.*;
-import com.zara.parser.*;
-import com.zara.parser.ast.*;
 import com.zara.interpreter.*;
-import com.zara.interpreter.instruction.*;
-import com.zara.runtime.*;
-import com.zara.utils.*;
 
+// This class represents a string literal in the AST
+// Example: "hello", "world", etc.
 public class StringNode implements Expression {
+
+    // Stores the string value
     private final String value;
 
+    // Constructor to initialize the string node
     public StringNode(String value) {
-        this.value = value;
+        this.value = value; // assign the string value
     }
 
+    // Evaluate method returns the string itself
+    // No computation or environment lookup is needed
     @Override
     public Object evaluate(Environment env) {
-        return value;
+        return value; // simply return the stored string
     }
 }

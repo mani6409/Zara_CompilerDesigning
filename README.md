@@ -1,123 +1,109 @@
 # Zara Interpreter
 
-A custom programming language interpreter written in Java. **ZARA** is designed to be simple, clean, and intuitive, supporting core programming constructs such as variables, arithmetic operations, conditionals, and loops.
+A custom programming language interpreter written in Java. **Zara** is a simple, clean, and readable language supporting variables, arithmetic, conditionals, loops, and a C-style `for` construct — all built on a classic Tokenizer → Parser → Interpreter pipeline.
 
 ---
 
-## 🚀 Features
+## Table of Contents
 
-* **Lexer (Lexical Analysis)**
-  Converts source code into tokens such as numbers, strings, identifiers, and symbols, with support for indentation-based blocks.
-
-* **Parser (Syntax Analysis)**
-  Builds an Abstract Syntax Tree (AST) using operator precedence and structured grammar rules.
-
-* **Interpreter (Execution Engine)**
-  Executes AST nodes and manages runtime state, including variables and environments.
-
-* **Modular Architecture**
-  Clean separation of concerns (lexer, parser, interpreter, runtime, utils).
-
-* **Maven Support**
-  Easy build and execution using Maven.
-
----
-
-## 📁 Project Structure
-
-```text
-zara-interpreter/
-├── src/main/java/com/zara/
-│   ├── lexer/          # Tokenization logic
-│   ├── parser/         # AST + parsing logic
-│   ├── interpreter/    # Execution engine
-│   ├── runtime/        # Value representations
-│   ├── utils/          # Error handling utilities
-│   └── main/           # Entry point (Main.java)
-├── programs/           # Sample .zara programs
-├── docs/               # Documentation (grammar, architecture)
-├── pom.xml             # Maven configuration
-└── README.md           # Project documentation
-```
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Project Structure](#project-structure)
+- [Building the Project](#building-the-project)
+- [Running a Program](#running-a-program)
+- [The Zara Language](#the-zara-language)
+- [Running Tests](#running-tests)
+- [Architecture Overview](#architecture-overview)
+- [How to Add a New Feature](#how-to-add-a-new-feature)
+- [Known Limitations & Bug Notes](#known-limitations--bug-notes)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## ⚙️ Prerequisites
-
-Make sure you have:
-
-* Java 17 or higher
-* Maven 3.6 or higher
-
----
-
-## 🛠️ Build Instructions
+## Quick Start
 
 ```bash
-mvn clean install
-```
+git clone https://github.com/mani6409/Zara_CompilerDesigning.git
+cd Zara_CompilerDesigning
 
----
+mvn clean install -DskipTests
 
-## ▶️ Run a Program
-
-Execute a `.zara` file using:
-
-```bash
 mvn exec:java \
   -Dexec.mainClass="com.zara.main.Main" \
   -Dexec.args="programs/program1.zara"
-```
 
----
+Expected output:
 
-## 🧪 Example
+16
+Prerequisites
+Tool	Minimum Version	Check
+Java JDK	17	java -version
+Apache Maven	3.6	mvn -version
+Project Structure
+Zara_CompilerDesigning/
+├── src/
+│   ├── main/java/com/zara/
+│   │   ├── main/
+│   │   ├── lexer/
+│   │   ├── parser/
+│   │   ├── interpreter/
+│   │   ├── runtime/
+│   │   └── utils/
+├── programs/
+├── docs/
+├── pom.xml
+└── README.md
+Building the Project
+mvn clean install
+mvn clean install -DskipTests
+mvn compile
+Running a Program
+mvn exec:java \
+  -Dexec.mainClass="com.zara.main.Main" \
+  -Dexec.args="programs/program1.zara"
 
-### ZARA Code
+OR
 
-```zara
+java -cp target/zara-interpreter-1.0-SNAPSHOT.jar \
+  com.zara.main.Main programs/program1.zara
+The Zara Language
+Assignment
 set x = 10
-set y = 20
-set result = x + y * 2
-
-show "The result is:"
-show result
-
-when result > 40:
-    show "Result is greater than 40"
-```
-
-### Output
-
-```text
-The result is:
-50.0
-Result is greater than 40
-```
-
----
-
-## 💡 Future Improvements
-
-* Add functions and recursion support
-* Improve error reporting with line/column info
-* Add REPL (interactive shell)
-* Extend standard library
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repository
-2. Create a new branch (`feature/your-feature-name`)
-3. Commit your changes
-4. Push to your fork
-5. Open a Pull Request
-
----
-
-## 📜 License
+set name = "Alice"
+Output
+show x
+show "Hello"
+Conditionals
+when score > 50:
+    show "Pass"
+otherwise:
+    show "Fail"
+Loop
+loop 5:
+    show "iteration"
+For Loop
+for (i = 0; i < 5; i++) { show i; }
+Running Tests
+mvn test
+Architecture Overview
+Source → Tokenizer → Parser → Interpreter → Output
+Known Limitations
+otherwise not fully parsed
+Nested blocks limited
+Some comparison operators missing
+Roadmap
+Fix otherwise
+Add boolean support
+Add functions
+Add REPL
+Contributing
+Fork repo
+Create branch
+Add changes + tests
+Run mvn test
+Submit PR
+License
 
 This project is open-source. Add a license if not already included.

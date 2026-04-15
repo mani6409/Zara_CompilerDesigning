@@ -1,16 +1,19 @@
 package com.zara.parser;
 
-import java.util.*;
-import com.zara.lexer.*;
-import com.zara.parser.*;
-import com.zara.parser.ast.*;
-import com.zara.interpreter.*;
-import com.zara.interpreter.instruction.*;
-import com.zara.runtime.*;
-import com.zara.utils.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import com.zara.lexer.Token;
+import com.zara.lexer.TokenType;
+import com.zara.parser.ast.BinaryOpNode;
+import com.zara.parser.ast.Expression;
+import com.zara.parser.ast.NumberNode;
+import com.zara.parser.ast.StringNode;
+import com.zara.parser.ast.VariableNode;
+import com.zara.interpreter.instruction.AssignInstruction;
+import com.zara.interpreter.instruction.IfInstruction;
+import com.zara.interpreter.instruction.Instruction;
+import com.zara.interpreter.instruction.PrintInstruction;
+import com.zara.interpreter.instruction.RepeatInstruction;
 
 public class Parser {
     private final List<Token> tokens;
@@ -28,7 +31,7 @@ public class Parser {
         List<Instruction> instructions = new ArrayList<>();
         while (!check(TokenType.EOF)) {
             if (check(TokenType.NEWLINE)) { consume(); continue; }
-            if (check(TokenType.INDENT)) consume(); // consume top-level indent (always 0)
+            if (check(TokenType.INDENT)) consume();
             if (check(TokenType.EOF)) break;
             instructions.add(parseInstruction());
             if (check(TokenType.NEWLINE)) consume();
@@ -65,53 +68,81 @@ public class Parser {
 
     // when condition:
     //     indented body
+    // otherwise:          <- optional
+    //     indented body
     private Instruction parseIf() {
         consume(); // when
         Expression condition = parseExpression();
         consume(); // :
         if (check(TokenType.NEWLINE)) consume();
-        return new IfInstruction(condition, parseBlock());
+        List<Instruction> thenBody = parseBlock();
+
+        List<Instruction> elseBody = new ArrayList<>();
+        if (check(TokenType.OTHERWISE)) {
+            consume();          // otherwise
+            consume();          // :
+            if (check(TokenType.NEWLINE)) consume();
+            elseBody = parseBlock();
+        }
+        return new IfInstruction(condition, thenBody, elseBody);
     }
 
     // loop N:
     //     indented body
     private Instruction parseRepeat() {
         consume(); // loop
-        int count = (int) Double.parseDouble(consume().getValue());
+        double raw = Double.parseDouble(consume().getValue());
+        if (raw != Math.floor(raw) || raw < 0)
+            throw new RuntimeException(
+                "loop count must be a non-negative integer, got: " + raw);
+        int count = (int) raw;
         consume(); // :
         if (check(TokenType.NEWLINE)) consume();
         return new RepeatInstruction(count, parseBlock());
     }
 
-    // Parse an indented block — lines with INDENT value > 0
+    // Parse an indented block - entered on INDENT token, exited on DEDENT token
     private List<Instruction> parseBlock() {
         List<Instruction> body = new ArrayList<>();
-        while (!check(TokenType.EOF)) {
-            if (!check(TokenType.INDENT)) break;
-            int indent = Integer.parseInt(peek().getValue());
-            if (indent == 0) break; // back to top-level
-            consume(); // consume the INDENT token
+        if (!check(TokenType.INDENT)) return body;
+        consume(); // consume INDENT
+        while (!check(TokenType.EOF) && !check(TokenType.DEDENT)) {
+            if (check(TokenType.NEWLINE)) { consume(); continue; }
             body.add(parseInstruction());
             if (check(TokenType.NEWLINE)) consume();
         }
+        if (check(TokenType.DEDENT)) consume(); // consume DEDENT
         return body;
     }
 
-    // Handles + - and comparisons (lowest precedence)
+    // Entry point - delegates to comparison (lowest precedence)
     private Expression parseExpression() {
+        return parseComparison();
+    }
+
+    // Handles > < == != <= >= (lower precedence than + -)
+    private Expression parseComparison() {
+        Expression left = parseAddSub();
+        if (check(TokenType.GREATER) || check(TokenType.LESS)    ||
+            check(TokenType.EQEQ)   || check(TokenType.NOT_EQ)   ||
+            check(TokenType.LESS_EQ)|| check(TokenType.GREATER_EQ)) {
+            String op = consume().getValue();
+            left = new BinaryOpNode(left, op, parseAddSub());
+        }
+        return left;
+    }
+
+    // Handles + - (higher precedence than comparisons)
+    private Expression parseAddSub() {
         Expression left = parseTerm();
         while (check(TokenType.PLUS) || check(TokenType.MINUS)) {
-            String op = consume().getValue();
-            left = new BinaryOpNode(left, op, parseTerm());
-        }
-        if (check(TokenType.GREATER) || check(TokenType.LESS) || check(TokenType.EQEQ)) {
             String op = consume().getValue();
             left = new BinaryOpNode(left, op, parseTerm());
         }
         return left;
     }
 
-    // Handles * / (higher precedence than + -)
+    // Handles * / (highest precedence among binary ops)
     private Expression parseTerm() {
         Expression left = parsePrimary();
         while (check(TokenType.STAR) || check(TokenType.SLASH)) {

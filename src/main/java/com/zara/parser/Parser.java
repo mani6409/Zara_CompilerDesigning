@@ -1,19 +1,12 @@
 package com.zara.parser;
 
+import com.zara.lexer.*;
+import com.zara.parser.ast.*;
+
+import com.zara.interpreter.instruction.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.zara.lexer.Token;
-import com.zara.lexer.TokenType;
-import com.zara.parser.ast.BinaryOpNode;
-import com.zara.parser.ast.Expression;
-import com.zara.parser.ast.NumberNode;
-import com.zara.parser.ast.StringNode;
-import com.zara.parser.ast.VariableNode;
-import com.zara.interpreter.instruction.AssignInstruction;
-import com.zara.interpreter.instruction.IfInstruction;
-import com.zara.interpreter.instruction.Instruction;
-import com.zara.interpreter.instruction.PrintInstruction;
-import com.zara.interpreter.instruction.RepeatInstruction;
 
 public class Parser {
     private final List<Token> tokens;
@@ -23,32 +16,18 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    private Token peek() {
-        return tokens.get(pos);
-    }
-
-    private Token consume() {
-        return tokens.get(pos++);
-    }
-
-    private boolean check(TokenType t) {
-        return peek().getType() == t;
-    }
+    private Token peek() { return tokens.get(pos); }
+    private Token consume() { return tokens.get(pos++); }
+    private boolean check(TokenType t) { return peek().getType() == t; }
 
     public List<Instruction> parse() {
         List<Instruction> instructions = new ArrayList<>();
         while (!check(TokenType.EOF)) {
-            if (check(TokenType.NEWLINE)) {
-                consume();
-                continue;
-            }
-            if (check(TokenType.INDENT))
-                consume();
-            if (check(TokenType.EOF))
-                break;
+            if (check(TokenType.NEWLINE)) { consume(); continue; }
+            if (check(TokenType.INDENT)) consume(); // consume top-level indent (always 0)
+            if (check(TokenType.EOF)) break;
             instructions.add(parseInstruction());
-            if (check(TokenType.NEWLINE))
-                consume();
+            if (check(TokenType.NEWLINE)) consume();
         }
         return instructions;
     }
@@ -56,156 +35,98 @@ public class Parser {
     private Instruction parseInstruction() {
         Token t = peek();
         return switch (t.getType()) {
-            case SET -> parseAssign();
+            case SET  -> parseAssign();
             case SHOW -> parsePrint();
             case WHEN -> parseIf();
             case LOOP -> parseRepeat();
-            default -> throw new RuntimeException(
-                    "Unexpected token '" + t.getValue() + "' on line " + t.getLine());
+            default   -> throw new RuntimeException(
+                "Unexpected token '" + t.getValue() + "' on line " + t.getLine()
+            );
         };
     }
 
+    // set x = expr
     private Instruction parseAssign() {
-        consume();
-        String name = consume().getValue();
-        consume();
+        consume(); // set
+        String name = consume().getValue(); // variable name
+        consume(); // =
         return new AssignInstruction(name, parseExpression());
     }
 
+    // show expr
     private Instruction parsePrint() {
-        consume();
+        consume(); // show
         return new PrintInstruction(parseExpression());
     }
 
+    // when condition:
+    //     indented body
     private Instruction parseIf() {
-        consume();
+        consume(); // when
         Expression condition = parseExpression();
-        consume();
-
-        if (check(TokenType.NEWLINE))
-            consume();
-
-        List<Instruction> thenBody = parseBlock();
-
-        List<Instruction> elseBody = new ArrayList<>();
-
-        if (check(TokenType.OTHERWISE)) {
-            consume();
-            consume();
-
-            if (check(TokenType.NEWLINE))
-                consume();
-
-            elseBody = parseBlock();
-        }
-
-        return new IfInstruction(condition, thenBody, elseBody);
+        consume(); // :
+        if (check(TokenType.NEWLINE)) consume();
+        return new IfInstruction(condition, parseBlock());
     }
 
+    // loop N:
+    //     indented body
     private Instruction parseRepeat() {
-        consume();
-        double raw = Double.parseDouble(consume().getValue());
-
-        if (raw != Math.floor(raw) || raw < 0)
-            throw new RuntimeException(
-                    "loop count must be a non-negative integer, got: " + raw);
-
-        int count = (int) raw;
-
-        consume();
-
-        if (check(TokenType.NEWLINE))
-            consume();
-
+        consume(); // loop
+        int count = (int) Double.parseDouble(consume().getValue());
+        consume(); // :
+        if (check(TokenType.NEWLINE)) consume();
         return new RepeatInstruction(count, parseBlock());
     }
 
-    /*
-     * FIXED BLOCK PARSER
-     * Uses INDENT and DEDENT tokens structurally
-     */
+    // Parse an indented block — lines with INDENT value > 0
     private List<Instruction> parseBlock() {
-
         List<Instruction> body = new ArrayList<>();
-
-        if (!check(TokenType.INDENT)) {
-            return body;
-        }
-
-        consume(); // consume INDENT
-
-        while (!check(TokenType.EOF) && !check(TokenType.DEDENT)) {
-
-            if (check(TokenType.NEWLINE)) {
-                consume();
-                continue;
-            }
-
+        while (!check(TokenType.EOF)) {
+            if (!check(TokenType.INDENT)) break;
+            int indent = Integer.parseInt(peek().getValue());
+            if (indent == 0) break; // back to top-level
+            consume(); // consume the INDENT token
             body.add(parseInstruction());
-
-            if (check(TokenType.NEWLINE)) {
-                consume();
-            }
+            if (check(TokenType.NEWLINE)) consume();
         }
-
-        if (check(TokenType.DEDENT)) {
-            consume(); // consume DEDENT
-        }
-
         return body;
     }
 
+    // Handles + - and comparisons (lowest precedence)
     private Expression parseExpression() {
-        return parseComparison();
-    }
-
-    private Expression parseComparison() {
-        Expression left = parseAddSub();
-
-        if (check(TokenType.GREATER) || check(TokenType.LESS) ||
-                check(TokenType.EQEQ) || check(TokenType.NOT_EQ) ||
-                check(TokenType.LESS_EQ) || check(TokenType.GREATER_EQ)) {
-
-            String op = consume().getValue();
-            left = new BinaryOpNode(left, op, parseAddSub());
-        }
-
-        return left;
-    }
-
-    private Expression parseAddSub() {
         Expression left = parseTerm();
-
         while (check(TokenType.PLUS) || check(TokenType.MINUS)) {
             String op = consume().getValue();
             left = new BinaryOpNode(left, op, parseTerm());
         }
-
+        if (check(TokenType.GREATER) || check(TokenType.LESS) || check(TokenType.EQEQ)) {
+            String op = consume().getValue();
+            left = new BinaryOpNode(left, op, parseTerm());
+        }
         return left;
     }
 
+    // Handles * / (higher precedence than + -)
     private Expression parseTerm() {
         Expression left = parsePrimary();
-
         while (check(TokenType.STAR) || check(TokenType.SLASH)) {
             String op = consume().getValue();
             left = new BinaryOpNode(left, op, parsePrimary());
         }
-
         return left;
     }
 
+    // Handles a single value: number, string, or variable
     private Expression parsePrimary() {
         Token t = consume();
-
         return switch (t.getType()) {
-            case NUMBER -> new NumberNode(Double.parseDouble(t.getValue()));
-            case STRING -> new StringNode(t.getValue());
+            case NUMBER     -> new NumberNode(Double.parseDouble(t.getValue()));
+            case STRING     -> new StringNode(t.getValue());
             case IDENTIFIER -> new VariableNode(t.getValue());
-
             default -> throw new RuntimeException(
-                    "Expected a value but got '" + t.getValue() +
-                            "' on line " + t.getLine());
+                "Expected a value but got '" + t.getValue() + "' on line " + t.getLine()
+            );
         };
     }
 }

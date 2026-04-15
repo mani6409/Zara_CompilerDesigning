@@ -1,6 +1,6 @@
 package com.zara.parser.ast;
 
-import com.zara.interpreter.Environment;
+import com.zara.interpreter.*;
 
 public class StringNode implements Expression {
     private final String value;
